@@ -1,37 +1,69 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
 
-const randomManager = { 
-    firstName: 'TestManager',
-    lastName: 'BlaBla',
-    email: 'bla@chat.com',
-    password: '12345678'
+import React, { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom'
+import { FormInput, emailPattern } from '../custom-components/FormInput';
+import SnackBar from '../custom-components/SnackBar';
+
+type formFields = {
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    confirmPassword: string
 }
 
 const SignUp = () => {
     const navigate = useNavigate();
-    
-    const onSubmitHandler = async (e: any) => {
-        e.preventDefault();
-        
+    const [showSnackBar, setShowSnackBar] = useState('');
+
+    const formMethods = useForm<formFields>({
+        mode: 'onSubmit',
+        defaultValues: {
+            email: '',
+            password: '',
+            firstName: '',
+            lastName: '',
+            confirmPassword: '',
+        }
+    });
+
+    const onSubmitHandler: SubmitHandler<formFields> = async (data) => {
+        setShowSnackBar('')
+
+        const manager = {
+            email: data.email,
+            password: data.password,
+            firstName: data.firstName,
+            lastName: data.lastName,
+        }
+
         try {
             const resp = await fetch('http://localhost:8000/api/auth/sign-up', {
                 method: 'POST',
-                body: JSON.stringify(randomManager),
+                body: JSON.stringify(manager),
                 headers: {
                     "Content-Type": "application/json"
                 }
             })
 
-            console.log(resp);
-            
-        } catch(e) {
+            if (resp.status === 403) {
+                setShowSnackBar('Email already exists!');
+                return;
+            }
+
+            if (resp.ok) {
+                navigate('/login', { replace: true })
+            }
+
+        } catch (e) {
             console.log(e);
         }
     }
 
     return (
         <div className="flex h-screen">
+            {showSnackBar && <SnackBar message={showSnackBar} />}
             <div className="hidden lg:flex items-center justify-center flex-1 text-white">
                 <div className="max-w-md text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="524.67004" height="531.39694" className="w-full" viewBox="0 0 524.67004 531.39694" >
@@ -107,29 +139,71 @@ const SignUp = () => {
             <div className="w-full bg-gray-100 lg:w-1/2 flex items-center justify-center">
                 <div className="max-w-md w-full p-6">
                     <h1 className="text-3xl font-semibold mb-6 text-black text-center">Sign Up</h1>
-                    <form action="#" method="POST" className="space-y-4" onSubmit={onSubmitHandler}>
+                    <form id='signUp' className="space-y-4" onSubmit={formMethods.handleSubmit(onSubmitHandler)}>
                         <div>
                             <label htmlFor="firstname" className="block text-sm font-medium text-gray-700">First name</label>
-                            <input type="text" id="firstname" name="firstName" className="mt-1 p-2 w-full bg-white text-black border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                            <FormInput
+                                {...formMethods.register("firstName", {
+                                    required: { value: true, message: "First name is required" },
+                                    validate: (value) => { return !!value.toString().trim() || "FirstName is required" },
+                                })}
+                                value={formMethods.watch('firstName')}
+                                type="text"
+                                errorMessage={formMethods.formState.errors.firstName?.message}
+                            />
                         </div>
                         <div>
                             <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last name</label>
-                            <input type="text" id="lastName" name="lastName" className="mt-1 p-2 w-full bg-white text-black border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                            <FormInput
+                                {...formMethods.register("lastName", {
+                                    required: { value: true, message: "Last name is required" },
+                                    validate: (value) => { return !!value.toString().trim() || "Last name is required" },
+                                })}
+                                value={formMethods.watch('lastName')}
+                                type="text"
+                                errorMessage={formMethods.formState.errors.lastName?.message}
+                            />
                         </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="text" id="email" name="email" className="mt-1 p-2 w-full border bg-white text-black rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                            <FormInput
+                                {...formMethods.register("email", {
+                                    required: { value: true, message: "Email is required" },
+                                    validate: (value) => { return !!value.toString().trim() || "Email is required" },
+                                    pattern: { value: emailPattern, message: 'Please, enter a valid email' },
+                                })}
+                                value={formMethods.watch('email')}
+                                type="text"
+                                errorMessage={formMethods.formState.errors.email?.message}
+                            />
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                            <input type="password" id="password" name="password" className="mt-1 p-2 w-full bg-white text-black border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                            <FormInput
+                                {...formMethods.register("password", {
+                                    required: { value: true, message: "Password is required", },
+                                    minLength: { value: 8, message: 'Password is too short' },
+                                    validate: (value) => { return !!value.toString().trim() || "Password is required" },
+                                })}
+                                value={formMethods.watch('password')}
+                                type="password"
+                                errorMessage={formMethods.formState.errors.password?.message}
+                            />
                         </div>
                         <div>
                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm password</label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" className="mt-1 p-2 w-full bg-white text-black border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" />
+                            <FormInput
+                                {...formMethods.register("confirmPassword", {
+                                    required: { value: true, message: "Confirm password is required", },
+                                    validate: (value) => { return (value.toString().trim() === formMethods.watch('password')) || "Password does not match" },
+                                })}
+                                value={formMethods.watch('confirmPassword')}
+                                type="password"
+                                errorMessage={formMethods.formState.errors.confirmPassword?.message}
+                            />
                         </div>
                         <div>
-                            <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Sign Up</button>
+                            <button form='signUp' type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Sign Up</button>
                         </div>
                     </form>
                     <div className="mt-4 text-sm text-gray-600 text-center">

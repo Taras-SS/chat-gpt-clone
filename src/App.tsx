@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Home from './pages/ChatGPT'
 import { Outlet } from 'react-router-dom'
+import AuthContext from './store/AuthContext'
 
-const App = () => {
+const App = () => {    
+    
     return (
-        <Outlet />
+        <div>Hello</div>
     )
 }
 

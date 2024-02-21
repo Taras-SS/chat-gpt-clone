@@ -1,0 +1,181 @@
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    margin-bottom: 6px;
+}
+
+.tooltipContainer {
+    position: absolute;
+    right: -1.563rem;
+}
+
+.input-wrapper-with-label {
+    height: 3.625rem;
+}
+
+.input {
+    min-width: 4.6875rem;
+    z-index: 2;
+    font-size: 1rem;
+    width: 100%;
+    height: 1.56rem;
+    border-width: 0 0 1px 0;
+    border-color: var(--dark_primary);
+    outline: none;
+    background: transparent;
+}
+
+.input:focus {
+    border-color: var(--shadow_primary);
+}
+
+.input.input-invalid {
+    border-color: var(--danger_primary);
+}
+
+.input:disabled {
+    border-color: var(--dark_secondary);
+    color: var(--dark_secondary);
+}
+
+.input-no-border {
+    padding-left: 8px;
+    border-width: 0;
+}
+
+.input ~ svg {
+    position: absolute;
+    right: 8px;
+    cursor: pointer;
+}
+
+.input-selector-icon ~ svg {
+    right: 0;
+}
+
+.input-invalid ~ .icon {
+    color: var(--danger_primary);
+    background-color: var(--danger_primary);
+}
+
+.input-label {
+    font-size: 1rem;
+    z-index: 1;
+    line-height: 1.375rem;
+    color: var(--shadow_third);
+    position: absolute;
+    bottom: 22px;
+    transition: transform .4s cubic-bezier(.25,.8,.25,1),  font-size .4s cubic-bezier(.25,.8,.25,1);
+}
+
+.input:focus ~ .input-label,
+.input:not([value=""]) ~ .input-label {
+    transform: translateY(-1rem);
+    font-size: .75rem;
+    color: var(--brand_primary);
+}
+
+.input.input-invalid ~ .input-label {
+    color: var(--danger_primary);
+}
+
+.input-wrapper.input-wrapper-invalid ~ svg {
+    opacity: 1;
+    color: var(--danger_primary);
+}
+
+.input-wrapper.input-wrapper-invalid ~ svg path {
+    fill: var(--danger_primary);
+}
+
+.error-msg {
+    position: absolute;
+    color: red;
+    font-size: .625rem;
+    line-height: 0.6rem;
+    transform: translate(-10%, 220%);
+}
+
+.with-lable {
+    animation: move-error-message .3s cubic-bezier(.25,.8,.25,1) forwards;
+}
+.without-lable {
+    animation: move-error-message-without-lable .3s cubic-bezier(.25,.8,.25,1) forwards;
+}
+
+@keyframes move-error-message {
+    from {
+        top: 1rem;
+    }
+
+    to {
+        top: 2.9rem;
+    }
+}
+
+@keyframes move-error-message-without-lable {
+    from {
+        top: 1rem;
+        left: 10px;
+    }
+
+    to {
+        top: 1.8rem;
+        left: 10px;
+    }
+}
+
+.input-container {
+    position: relative;
+    height: 100%;
+    padding-right: 8px;
+}
+.value {
+    white-space: nowrap;
+}
+.input-without-label {
+    position: absolute;
+    outline: none;
+    padding: 0;
+    border: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.select-input-without-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 1.375rem;
+    min-width: 4.5rem;
+    cursor: pointer;
+}
+
+.opened {
+    color: var(--shadow_primary);
+}
+
+.optional {
+    font-style: italic;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    width: 1rem;
+    height: 1rem;
+    z-index: 1000;
+    opacity: 0;
+    cursor: pointer;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+input[type=number] {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    margin: 0;
+}

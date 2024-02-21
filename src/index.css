@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+#snackbar-root {
+    position: absolute;
+    top: 0;
+    width: 100%;
+}

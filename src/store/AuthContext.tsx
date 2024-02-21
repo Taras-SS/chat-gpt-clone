@@ -1,28 +1,35 @@
-import { Dispatch, ReactNode, SetStateAction, createContext, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from "react";
 
 type UserAuth = {
     email: string,
-    password: string
+    accessToken: string,
+    firstName: string,
+    lastName: string
 }
 
-const initialState = {
+type AuthContextType = {
+    auth?: UserAuth,
+    setAuth: Dispatch<SetStateAction<UserAuth>>
+}
+
+const initialState :AuthContextType = {
     auth: {
         email: '',
-        password: ''
-        
+        accessToken: '',
+        firstName: '',
+        lastName: '',
     },
     setAuth: () => {}
 } as {
     auth?: UserAuth,
     setAuth: Dispatch<SetStateAction<UserAuth>>
-    }
+}
 
 
 const AuthContext = createContext(initialState);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [auth, setAuth] = useState<UserAuth>({ email: '', password: '' });
-    
+    const [auth, setAuth] = useState<UserAuth>({ email: '', accessToken: '', firstName: '', lastName: '' });
     
     return (
         <AuthContext.Provider value={{ auth, setAuth }}>
