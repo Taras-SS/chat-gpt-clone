@@ -22,7 +22,7 @@ const Login = () => {
             password: ''
         }
     });
-
+    
     const loginToAdmin: SubmitHandler<formFields> = async (data) => {
         setShowSnackBar('');
 
@@ -43,8 +43,9 @@ const Login = () => {
             if (resp.ok) {
                 const body = await resp.json();
                 setAuth({ ...body })
+                sessionStorage.setItem('auth', JSON.stringify({ ...body }))
 
-                navigate('/admin', { replace: true })
+                navigate('/admin')
                 return;
             }
 

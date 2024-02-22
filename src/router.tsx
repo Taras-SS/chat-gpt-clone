@@ -1,9 +1,10 @@
 import { RouteObject, createBrowserRouter } from "react-router-dom";
-import ChatGPT from "./pages/ChatGPT";
+import ChatGPT from "./pages/ChatGPT/ChatGPT";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Admin from "./pages/Admin";
 import RequireAuth from "./components/RequireAuth";
+import ManagerChat from "./components/ManagerChat/ManagerChat";
 
 const routes = [
     {
@@ -15,7 +16,13 @@ const routes = [
         children:[
             {
                 path: 'admin',
-                element: <Admin />
+                element: <Admin />,
+                children: [
+                    {
+                        path: 'chat',
+                        element: <ManagerChat />
+                    }
+                ]
             },
         ]
     },
