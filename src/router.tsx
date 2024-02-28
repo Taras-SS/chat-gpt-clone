@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Admin from "./pages/Admin";
 import RequireAuth from "./components/RequireAuth";
-import ManagerChat from "./components/ManagerChat/ManagerChat";
+import ChatBox from "./components/MessagesTable/AdminChat/ChatBox";
 
 const routes = [
     {
@@ -19,8 +19,8 @@ const routes = [
                 element: <Admin />,
                 children: [
                     {
-                        path: 'chat',
-                        element: <ManagerChat />
+                        path: 'selectedChat/:sessionId',
+                        element: <ChatBox />,
                     }
                 ]
             },

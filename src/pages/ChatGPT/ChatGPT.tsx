@@ -2,36 +2,50 @@ import React, { useState, useEffect, useRef } from 'react'
 import { ArrowLeftOnRectangleIcon, ChatBubbleLeftIcon, LinkIcon, MoonIcon, PlusIcon, TrashIcon, UserIcon } from "@heroicons/react/24/outline"
 import ChatGPTAnswer from './ChatGPTAnswer';
 import ChatGPTQuickQuestions from './ChatGPTQuickQuestions';
+import * as io from 'socket.io-client'
+
+import { v4 as uuidv4 } from "uuid"
 
 export type Message = {
     text: string,
     isBot: boolean
 }
 
+type HistoryChat = {
+    label: string,
+    messages?: Message[]
+}
+
+
+const socket = io.connect('http://localhost:8000');
+
 const ChatGPT = () => {
     const [hasAnswered, setHasAnswered] = useState(false);
     const [chatInput, setChatInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
+    const [chatsHistory, setChatsHistory] = useState<HistoryChat[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // useEffect(() => {
-    // (async () => {
-    //     try {
-    //         const resp = await fetch('http://localhost:8000/api/chat-history', {
-    //             method: 'GET',
-    //             body: JSON.stringify({ clientSessionId: '123456' }),
-    //             headers: {
-    //                 "Content-Type": "application/json"
-    //             }
-    //         })
-    //         console.log(resp);
+    useEffect(() => {
+        let sessionId = localStorage.getItem("sessionId");
 
+        if (!sessionId) {
+            sessionId = uuidv4();
+            localStorage.setItem("sessionId", sessionId)
+        }
 
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // })()
-    // }, [])
+        socket.on("connect", () => {
+            socket.emit("send-session-id", { sessionId })
+        })
+
+        const chatHistory = localStorage.getItem('chatHistory')
+        const parsedChatHistory = JSON.parse(chatHistory!);
+
+        if (parsedChatHistory?.length) {
+            setChatsHistory(parsedChatHistory)
+            return;
+        }
+    }, [])
 
     const handleEnterClick = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if ((!chatInput.trim().length) && event.key === 'Enter') {
@@ -43,6 +57,47 @@ const ChatGPT = () => {
             event.preventDefault();
             sendMessageForChatGPT();
             return;
+        }
+    }
+
+    const regenarateResponse = async () => {
+        const lastUserMessage = messages.toReversed().find(el => !el.isBot)?.text;
+        const copiedMessages = messages.slice(0, -1);
+
+        setIsLoading(true);
+        setChatInput('');
+        setMessages([
+            ...copiedMessages,
+            { text: '', isBot: true },
+        ])
+
+        setHasAnswered(true);
+
+        try {
+            const resp = await fetch('http://localhost:8000/api/ask-question', {
+                method: 'POST',
+                body: JSON.stringify({ question: lastUserMessage, clientSessionId: '123456' }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            setIsLoading(false);
+
+            if (resp.ok) {
+                const body = await resp.json();
+                const messagesWithLoader = messages.filter((item => item.text !== ''));
+
+                messagesWithLoader.pop();
+
+                setMessages([
+                    ...messagesWithLoader,
+                    { text: body?.answers[0]?.message?.content, isBot: true },
+                ])
+
+                return;
+            }
+        } catch (e) {
+            console.warn(e);
         }
     }
 
@@ -60,7 +115,7 @@ const ChatGPT = () => {
         try {
             const resp = await fetch('http://localhost:8000/api/ask-question', {
                 method: 'POST',
-                body: JSON.stringify({ question: input, clientSessionId: '123456' }),
+                body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId") }),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -81,7 +136,7 @@ const ChatGPT = () => {
                 return;
             }
         } catch (e) {
-            console.log(e);
+            console.warn(e);
         }
     }
 
@@ -91,14 +146,48 @@ const ChatGPT = () => {
         textarea!.style.height = textarea!.scrollHeight + 'px';
     }
 
+    const addChatsToHistory = () => {
+        const historyLabel = `${messages[0]?.text} ${messages[messages.length - 1]?.text}`
+        setHasAnswered(false);
+
+        if (messages.length) {
+            setChatsHistory(prev => [
+                ...prev,
+                {
+                    label: historyLabel,
+                    messages
+                }
+            ])
+            const chatHistory = {
+                label: historyLabel,
+                messages
+            }
+            localStorage.setItem('chatHistory', JSON.stringify([chatHistory, ...chatsHistory]));
+            setMessages([]);
+        }
+    }
+
+    const onHistoryChatClickHandler = (label: string) => {
+        const chatHistory = localStorage.getItem('chatHistory')
+        const parsedChatHistory = JSON.parse(chatHistory!)
+
+        const clickedChat = parsedChatHistory.find((el: HistoryChat) => el.label === label)
+
+        if (clickedChat) {
+            setHasAnswered(true)
+            setMessages([
+                ...clickedChat?.messages
+            ])
+        }
+    }
 
     return (
         <div className='h-screen bg-Default text-black flex'>
             <div className='w-64 flex flex-col'>
-                <div className='relative flex flex-col flex-grow bg-[#171717] overflow-y-auto'>
+                <div className='relative flex flex-col flex-grow bg-[#171717]'>
                     <div className="sticky left-0 right-0 top-0 z-20 bg-[#171717] pt-3.5">
                         <div className="pb-0.5 last:pb-0 text-white " >
-                            <a className="group flex h-10 items-center gap-2 rounded-lg px-2 font-medium hover:bg-token-surface-primary" href="/">
+                            <div onClick={addChatsToHistory} className="group cursor-pointer flex h-10 hover:bg-Default items-center gap-2 mb-20 rounded-lg px-2 font-medium hover:bg-token-surface-primary">
                                 <div className="h-7 w-7 flex-shrink-0">
                                     <div className="gizmo-shadow-stroke relative flex h-full items-center justify-center rounded-full bg-white text-black">
                                         <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-2/3 w-2/3" role="img">
@@ -117,8 +206,17 @@ const ChatGPT = () => {
                                         </button>
                                     </span>
                                 </div>
-                                
-                            </a>
+                            </div>
+                                <h3 className="h-9 pb-2 pt-3 px-2 text-xs text-[#676767] font-medium text-ellipsis overflow-hidden break-all text-token-text-tertiary">Previous 7 Days</h3>
+                            <div className='flex flex-col overflow-y-scroll h-[40rem]'>
+                                {
+                                    chatsHistory.map((chat, index) => (
+                                        <div key={index} onClick={() => onHistoryChatClickHandler(chat.label)} className="group cursor-pointer hover:bg-Default flex py-4 items-center gap-2 rounded-lg px-2 font-medium">
+                                            <div className="grow  overflow-hidden text-ellipsis whitespace-nowrap text-sm text-token-text-primary">{chat.label}</div>
+                                        </div>)
+                                    )
+                                }
+                            </div>
                         </div>
                     </div>
                     <div className='absolute bottom-0 inset-x-0 border-t border-gray-200/50 mx-2 py-4 px-2 cursor-pointer   '>
@@ -151,6 +249,8 @@ const ChatGPT = () => {
                                             <ChatGPTAnswer
                                                 message={message}
                                                 key={index}
+                                                regenarateResponse={regenarateResponse}
+                                                isLastOne={(messages.length - 1) === index}
                                             />
                                         ))}
 
