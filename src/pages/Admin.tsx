@@ -1,10 +1,49 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import MessagesTable from '../components/MessagesTable/MessagesTable';
+import * as io from 'socket.io-client'
+
+type AnswerType = {
+    finish_reason: string
+    index: number
+    logprobs: null
+    message: {
+        content: string
+        role: string
+    }
+}
+
+export type UserMessageType = {
+    question: string;
+    answer: Array<AnswerType>
+    clientSessionId: string
+
+}
+
 
 const Admin = () => {
     const navigate = useNavigate();
+    const [userMessage, setUserMessage] = useState<UserMessageType>();
+    const [connectedAdminSocket, setConnectedAdminSocket] = useState<any>();
     const loggedInUser = JSON.parse(sessionStorage.getItem('auth')!);
+
+
+    useEffect(() => {
+        const socket = io.connect('http://localhost:8000', {
+            query: {
+                isAdmin: true
+            }
+        });
+
+        setConnectedAdminSocket({...socket});
+
+        socket.on("send-question-to-admin", (response) => {
+            if(response) {                
+                setUserMessage(response)
+            }
+        })
+
+    }, [])
 
     const logOutHandler = () => {
         navigate(-1);
@@ -19,7 +58,7 @@ const Admin = () => {
                 </div>
             </div>
             <div className='flex flex-col h-full'>
-                <MessagesTable />
+                <MessagesTable userMessage={userMessage!} connectedAdminSocket={connectedAdminSocket}/>
             </div>
         </div>
     )

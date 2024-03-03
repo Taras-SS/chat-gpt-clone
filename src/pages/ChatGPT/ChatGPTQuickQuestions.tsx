@@ -13,8 +13,8 @@ const ChatGPTQuickQuestions = ({ sendMessageForChatGPT }: { sendMessageForChatGP
                                         <div className="flex w-full gap-2 items-center justify-center ">
                                             <div className="flex w-full items-center justify-between">
                                                 <div className="flex flex-col overflow-hidden">
-                                                    <div className="truncate">Help me pick</div>
-                                                    <div className="truncate font-normal opacity-50">a birthday gift for my mom who likes gardening</div>
+                                                    <div className="truncate">Текст 1</div>
+                                                    <div className="truncate font-normal opacity-50">описание 1...</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -25,8 +25,8 @@ const ChatGPTQuickQuestions = ({ sendMessageForChatGPT }: { sendMessageForChatGP
                                         <div className="flex w-full gap-2 items-center justify-center">
                                             <div className="flex w-full items-center justify-between">
                                                 <div className="flex flex-col overflow-hidden">
-                                                    <div className="truncate">Make up a story</div>
-                                                    <div className="truncate font-normal opacity-50">about Sharky, a tooth-brushing shark superhero</div>
+                                                <div className="truncate">Текст 2</div>
+                                                    <div className="truncate font-normal opacity-50">описание 2...</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -39,8 +39,8 @@ const ChatGPTQuickQuestions = ({ sendMessageForChatGPT }: { sendMessageForChatGP
                                         <div className="flex w-full gap-2 items-center justify-center">
                                             <div className="flex w-full items-center justify-between">
                                                 <div className="flex flex-col overflow-hidden">
-                                                    <div className="truncate">Show me a code snippet</div>
-                                                    <div className="truncate font-normal opacity-50">of a website's sticky header</div>
+                                                <div className="truncate">Текст 3</div>
+                                                    <div className="truncate font-normal opacity-50">описание 3...</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -51,8 +51,8 @@ const ChatGPTQuickQuestions = ({ sendMessageForChatGPT }: { sendMessageForChatGP
                                         <div className="flex w-full gap-2 items-center justify-center">
                                             <div className="flex w-full items-center justify-between">
                                                 <div className="flex flex-col overflow-hidden">
-                                                    <div className="truncate">Come up with concepts</div>
-                                                    <div className="truncate font-normal opacity-50">for a retro-style arcade game</div>
+                                                <div className="truncate">Текст 4</div>
+                                                    <div className="truncate font-normal opacity-50">описание 4...</div>
                                                 </div>
                                             </div>
                                         </div>

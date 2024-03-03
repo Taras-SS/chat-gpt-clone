@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import ChatSidebarItem from './ChatSidebarItem'
 import Spinner from '../../../custom-components/Spinner'
+import { useOutletContext } from 'react-router-dom'
+import { UserMessageType } from '../../../pages/Admin'
 
 export type ChatDoc = {
     clientSessionId: string
@@ -17,11 +19,15 @@ export type Chat = {
     doc: ChatDoc
 }
 
-const ChatSideBar = () => {
+type ChatSideBarProps = {
+    userMessage: UserMessageType
+}
+
+const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
     const [chats, setChats] = useState<Chat[]>([]);
     const [filteredChats, setFilteredChats] = useState<Chat[]>([]);
     const loggedInUser = JSON.parse(sessionStorage.getItem('auth')!);
-
+    
     // Get unread chats
     useEffect(() => {
         (async () => {
@@ -34,19 +40,22 @@ const ChatSideBar = () => {
                 })
 
                 const { data } = await resp.json() as { data: Chat[] };
-                const sortedChats = sortArrayByViewedByAdmin(data);
-                setChats(sortedChats);
-                setFilteredChats(sortedChats);
+                
+                const sortedChats = sortArrayByViewedByAdmin([...data]);
+                
+                setChats([...sortedChats]);                
+                setFilteredChats([...sortedChats]);
 
             } catch (e) {
                 console.log(e);
             }
         })()
-    }, []);
-
+        
+    }, [userMessage]);
+    
     const readUserChat = async (sessionId: string, isViewedByAdmin: boolean) => {
-        if (isViewedByAdmin) return;
-
+        if(isViewedByAdmin) return;
+        
         try {
             await fetch('http://localhost:8000/api/read-messages', {
                 method: 'POST',
@@ -85,6 +94,28 @@ const ChatSideBar = () => {
 
         setFilteredChats(filtered);    
     }
+
+    const modiefyChats = (openedChatId: string) => {
+        
+        const newChats = chats.map((item) => {
+            
+            if(item._id === openedChatId) {
+                return {
+                    ...item,
+                    doc: {
+                        ...item.doc,
+                        viewedByAdmin: true
+                    }
+                }
+            } else {
+                    return item
+                }
+            }
+        )
+        
+        setChats([...newChats]);
+        setFilteredChats([...newChats]);
+    }
     
     return (
         <div className="flex flex-col w-2/5 max-h-[100%] h-[43rem] overflow-scroll border-r-2">
@@ -99,9 +130,10 @@ const ChatSideBar = () => {
             {
                 filteredChats.map((chat, index) => (
                     <ChatSidebarItem
-                        key={index} 
+                        key={chat._id} 
                         chat={chat} 
                         readMessageFromUserChat={readUserChat} 
+                        modiefyChats={modiefyChats}
                     />
                 ))
             }

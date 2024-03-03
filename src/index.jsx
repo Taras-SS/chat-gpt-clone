@@ -11,12 +11,10 @@ import Login from "./pages/Login";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-        <React.StrictMode>
-                <AuthProvider>
-                        <RouterProvider router={router} >
-                                <App />
-                        </RouterProvider>
-                </AuthProvider>
+        <AuthProvider>
+                <RouterProvider router={router} >
+                        <App />
+                </RouterProvider>
+        </AuthProvider>
 
-        </React.StrictMode>
 );

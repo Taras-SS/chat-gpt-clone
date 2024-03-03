@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { ArrowLeftOnRectangleIcon, ChatBubbleLeftIcon, LinkIcon, MoonIcon, PlusIcon, TrashIcon, UserIcon } from "@heroicons/react/24/outline"
 import ChatGPTAnswer from './ChatGPTAnswer';
+import { ChatDoc } from '../../components/MessagesTable/ChatSidebar/ChatSidebar';
+import { v4 as uuidv4 } from "uuid"
 import ChatGPTQuickQuestions from './ChatGPTQuickQuestions';
 import * as io from 'socket.io-client'
+import Quiz from './Quiz';
 
-import { v4 as uuidv4 } from "uuid"
 
 export type Message = {
     text: string,
@@ -17,16 +19,19 @@ type HistoryChat = {
 }
 
 
-const socket = io.connect('http://localhost:8000');
-
 const ChatGPT = () => {
     const [hasAnswered, setHasAnswered] = useState(false);
     const [chatInput, setChatInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [chatsHistory, setChatsHistory] = useState<HistoryChat[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [messageFromAdmin, setMessageFromAdmin] = useState<ChatDoc>();
+    const [connectIsAdmin, setConnetWithAdmin] = useState(false);
+    const [isQuizFinished, setIsQuizFinished] = useState(false);
 
     useEffect(() => {
+        const socket = io.connect('http://localhost:8000');
+
         let sessionId = localStorage.getItem("sessionId");
 
         if (!sessionId) {
@@ -38,14 +43,51 @@ const ChatGPT = () => {
             socket.emit("send-session-id", { sessionId })
         })
 
+        socket.on("send-response", (resp) => {
+            setConnetWithAdmin(true);
+            if (resp) setMessageFromAdmin(resp);
+        })
+
+        socket.on("connect-with-gpt", () => {
+            setConnetWithAdmin(false);
+        })
+
         const chatHistory = localStorage.getItem('chatHistory')
         const parsedChatHistory = JSON.parse(chatHistory!);
+
+        const currentSesionHistory = localStorage.getItem('currentSessionHistory');
+        const parsedCurrentSessionHistory = JSON.parse(currentSesionHistory!);
+
+        if (parsedCurrentSessionHistory) {
+            setMessages(parsedCurrentSessionHistory);
+            setHasAnswered(true)
+        }
+
 
         if (parsedChatHistory?.length) {
             setChatsHistory(parsedChatHistory)
             return;
         }
     }, [])
+
+    useEffect(() => {
+        if (messageFromAdmin) {
+
+            const messageText = JSON.parse(messageFromAdmin?.message);
+            setMessages([
+                ...messages,
+                {
+                    isBot: true,
+                    text: messageText[0]?.message?.content
+                }
+            ])
+        }
+
+    }, [messageFromAdmin]);
+
+    useEffect(() => {
+        // if (messages.length) setIsQuizFinished(true);
+    }, [messages.length])
 
     const handleEnterClick = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if ((!chatInput.trim().length) && event.key === 'Enter') {
@@ -115,7 +157,7 @@ const ChatGPT = () => {
         try {
             const resp = await fetch('http://localhost:8000/api/ask-question', {
                 method: 'POST',
-                body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId") }),
+                body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId"), connectedWithAdmin: connectIsAdmin  }),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -125,6 +167,10 @@ const ChatGPT = () => {
             if (resp.ok) {
                 const body = await resp.json();
                 const messagesWithLoader = messages.filter((item => item.text === ''));
+                
+                if(body?.connectedWithAdmin) {
+                    return;
+                }
 
                 setMessages([
                     ...messages,
@@ -132,6 +178,13 @@ const ChatGPT = () => {
                     { text: input, isBot: false },
                     { text: body?.answers[0]?.message?.content, isBot: true }
                 ])
+
+                localStorage.setItem('currentSessionHistory', JSON.stringify(
+                    [...messages,
+                    { text: input, isBot: false },
+                    { text: body?.answers[0]?.message?.content, isBot: true }
+                    ]
+                ));
 
                 return;
             }
@@ -158,6 +211,8 @@ const ChatGPT = () => {
                     messages
                 }
             ])
+            localStorage.removeItem('currentSessionHistory')
+
             const chatHistory = {
                 label: historyLabel,
                 messages
@@ -172,6 +227,8 @@ const ChatGPT = () => {
         const parsedChatHistory = JSON.parse(chatHistory!)
 
         const clickedChat = parsedChatHistory.find((el: HistoryChat) => el.label === label)
+
+        localStorage.setItem('currentSessionHistory', JSON.stringify([...clickedChat?.messages]))
 
         if (clickedChat) {
             setHasAnswered(true)
@@ -196,7 +253,7 @@ const ChatGPT = () => {
                                         </svg>
                                     </div>
                                 </div>
-                                <div className="grow  overflow-hidden text-ellipsis whitespace-nowrap text-sm text-token-text-primary">New chat</div>
+                                <div className="grow  overflow-hidden text-ellipsis whitespace-nowrap text-sm text-token-text-primary">Новый чат</div>
                                 <div className="flex gap-3">
                                     <span className="flex items-center" data-state="closed">
                                         <button className="text-token-text-primary">
@@ -207,7 +264,7 @@ const ChatGPT = () => {
                                     </span>
                                 </div>
                             </div>
-                                <h3 className="h-9 pb-2 pt-3 px-2 text-xs text-[#676767] font-medium text-ellipsis overflow-hidden break-all text-token-text-tertiary">Previous 7 Days</h3>
+                            <h3 className="h-9 pb-2 pt-3 px-2 text-xs text-[#676767] font-medium text-ellipsis overflow-hidden break-all text-token-text-tertiary">Последние 7 дней:</h3>
                             <div className='flex flex-col overflow-y-scroll h-[40rem]'>
                                 {
                                     chatsHistory.map((chat, index) => (
@@ -222,7 +279,7 @@ const ChatGPT = () => {
                     <div className='absolute bottom-0 inset-x-0 border-t border-gray-200/50 mx-2 py-4 px-2 cursor-pointer   '>
                         <div className='flex space-x-2 p-2 mx-2 rounded text-white text-sm items-center'>
                             <UserIcon className='h-5 w-5 text-gray-300' />
-                            <p>User</p>
+                            <p>Пользователь</p>
                         </div>
                     </div>
                 </div>
@@ -258,9 +315,9 @@ const ChatGPT = () => {
                                 }
                             </div>
                             {!hasAnswered &&
-                                <div className="flex flex-col items-center justify-center pt-[20%]">
+                                <div className="flex flex-col items-center justify-center mt-14 pt-14">
                                     <div className="relative">
-                                        <div className="mb-3 h-12 w-12">
+                                        <div className="h-12 w-12">
                                             <div className="gizmo-shadow-stroke relative flex h-full items-center justify-center rounded-full bg-white text-black">
                                                 <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-2/3 w-2/3" role="img">
                                                     <text x="-9999" y="-9999">ChatGPT</text>
@@ -269,7 +326,12 @@ const ChatGPT = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mb-5 text-2xl font-medium text-white">How can I help you today?</div>
+                                    <div className="mb-5 text-l font-medium text-white leading-7 mx-2 text-center md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
+                                        <p className='pt-1'>Уважаемый клиент,</p>
+                                        <p className='pb-2'>
+                                            Мы понимаем, что потеря средств в интернете из-за мошенничества или обмана может быть неприятным и стрессовым опытом. Наш виртуальный помощник предназначен для того, чтобы максимально облегчить вам процесс восстановления средств и предоставить качественную поддержку в данной ситуации.
+                                        </p>
+                                    </div>
                                 </div>
                             }
                         </div>
@@ -278,38 +340,41 @@ const ChatGPT = () => {
                         <form className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
                             <div className="relative flex h-full flex-1 items-stretch md:flex-col">
                                 {!hasAnswered && <ChatGPTQuickQuestions sendMessageForChatGPT={sendMessageForChatGPT} />}
-                                <div className="flex w-full items-center">
-                                    <div className="overflow-hidden [&amp;:has(textarea:focus)]:border-token-border-xheavy [&amp;:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)] flex flex-col w-full dark:border-token-border-heavy flex-grow relative border border-token-border-heavy dark:text-white rounded-2xl bg-token-main-surface-primary shadow-[0_0_0_2px_rgba(255,255,255,0.95)] dark:shadow-[0_0_0_2px_rgba(52,53,65,0.95)]">
-                                        <textarea
-                                            onKeyDown={handleEnterClick}
-                                            id='chatTextarea'
-                                            value={chatInput}
-                                            onChange={
-                                                (e) => {
-                                                    setChatInput(e.target.value)
-                                                    resizeTextarea();
-                                                }
-                                            }
-                                            placeholder="Message ChatGPT…"
-                                            className=" bg-transparent pr-10 focus:ring-0 focus-visible:ring-0 dark:bg-transparent mt-0  placeholder-black/50 dark:placeholder-white/50 p-[10px]"
-                                            style={{ "maxHeight": '450px', 'height': 'auto', 'overflowY': 'visible' }}
-                                        ></textarea>
-                                        <button disabled={!chatInput.trim() || isLoading} type='button' onClick={() => sendMessageForChatGPT()} className="absolute bg-black md:bottom-5 md:right-3 dark:hover:bg-white right-2 disabled:opacity-10 disabled:text-gray-400 text-white p-0.5 border border-black rounded-lg dark:border-white dark:bg-white bottom-1.5 transition-colors">
-                                            <span className="" data-state="closed">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-Default dark:text-Default">
-                                                    <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </div>
-                                </div>
+                                {
+                                    true 
+                                        ?   (<div className="flex w-full items-center">
+                                                <div className="overflow-hidden [&amp;:has(textarea:focus)]:border-token-border-xheavy [&amp;:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)] flex flex-col w-full dark:border-token-border-heavy flex-grow relative border border-token-border-heavy dark:text-white rounded-2xl bg-token-main-surface-primary shadow-[0_0_0_2px_rgba(255,255,255,0.95)] dark:shadow-[0_0_0_2px_rgba(52,53,65,0.95)]">
+                                                    <textarea
+                                                        onKeyDown={handleEnterClick}
+                                                        id='chatTextarea'
+                                                        value={chatInput}
+                                                        onChange={
+                                                            (e) => {
+                                                                setChatInput(e.target.value)
+                                                                resizeTextarea();
+                                                            }
+                                                        }
+                                                        placeholder="Напишите ChatGPT…"
+                                                        className=" bg-transparent pr-10 focus:ring-0 focus-visible:ring-0 dark:bg-transparent mt-0  placeholder-black/50 dark:placeholder-white/50 p-[10px]"
+                                                        style={{ "maxHeight": '450px', 'height': 'auto', 'overflowY': 'visible' }}
+                                                    >
+                                                    </textarea>
+                                                    <button disabled={!chatInput.trim() || isLoading} type='button' onClick={() => sendMessageForChatGPT()} className="absolute bg-black md:bottom-5 md:right-3 dark:hover:bg-white right-2 disabled:opacity-10 disabled:text-gray-400 text-white p-0.5 border border-black rounded-lg dark:border-white dark:bg-white bottom-1.5 transition-colors">
+                                                        <span className="" data-state="closed">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-Default dark:text-Default">
+                                                                <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>)
+                                        : <Quiz />
+                                }
                             </div>
                         </form>
-                        <div className="relative px-2 py-2 text-center text-xs text-token-text-secondary md:px-[60px]"><span className='text-white'>ChatGPT can make mistakes. Consider checking important information.</span></div>
+                        <div className="relative px-2 py-2 text-center text-xs text-token-text-secondary md:px-[60px]"><span className='text-white'>ChatGPT может допускать ошибки. Подумайте о проверке важной информации..</span></div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     )

@@ -1,10 +1,15 @@
 import React, { Suspense } from 'react'
 import ChatSidebar from './ChatSidebar/ChatSidebar';
 import { Outlet } from 'react-router-dom';
+import { UserMessageType } from '../../pages/Admin';
 
-const MessagesTable = () => {
+type MessageTableProps = {
+    userMessage: UserMessageType,
+    connectedAdminSocket: any
+}
+
+const MessagesTable = ({ userMessage, connectedAdminSocket }: MessageTableProps) => {
     const loggedInUser = JSON.parse(sessionStorage.getItem('auth')!);
-
 
     return (
         <div className="shadow-lg rounded-lg bg-inherit flex flex-col flex-1">
@@ -18,8 +23,8 @@ const MessagesTable = () => {
                 </div>
             </div>
             <div className="flex flex-row justify-between bg-inherit flex-1">
-                <ChatSidebar />
-                <Outlet />
+                <ChatSidebar userMessage={userMessage} />
+                <Outlet context={{userMessage, connectedAdminSocket}} />
             </div>
         </div>
     )

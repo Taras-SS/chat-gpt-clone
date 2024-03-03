@@ -36,11 +36,11 @@ const ChatGPTAnswer = ({ message, regenarateResponse, isLastOne }: ChatGPTAnswer
         const stringResponse = message.text;
 
         const intervalId = setInterval(() => {
-            setDisplayResponse(stringResponse.slice(0, i));
+            setDisplayResponse(stringResponse?.slice(0, i));
 
             i++;
 
-            if (i > stringResponse.length) {
+            if (i > stringResponse?.length) {
                 clearInterval(intervalId);
                 setCompletedTyping(true);
             }
