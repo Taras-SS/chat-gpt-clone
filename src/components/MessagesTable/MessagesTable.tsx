@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react'
 import ChatSidebar from './ChatSidebar/ChatSidebar';
 import { Outlet } from 'react-router-dom';
-import { UserMessageType } from '../../pages/Admin';
+import { SocketType, UserMessageType } from '../../pages/Admin';
 
 type MessageTableProps = {
     userMessage: UserMessageType,
-    connectedAdminSocket: any
+    connectedAdminSocket: SocketType
 }
 
 const MessagesTable = ({ userMessage, connectedAdminSocket }: MessageTableProps) => {

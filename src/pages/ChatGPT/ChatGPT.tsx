@@ -249,7 +249,7 @@ const ChatGPT = () => {
         }
     }
 
-    const handleSubmitQuiz = (answers: any) => {
+    const handleSubmitQuiz = () => {
         localStorage.setItem('isQuizCompleted', 'true')
 
         setIsQuizStarted(false);

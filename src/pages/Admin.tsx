@@ -17,17 +17,17 @@ export type UserMessageType = {
     question: string;
     answer: Array<AnswerType>
     clientSessionId: string
-
 }
 
+export type SocketType = io.Socket;
 
 const Admin = () => {
     const navigate = useNavigate();
     const [userMessage, setUserMessage] = useState<UserMessageType>();
-    const [connectedAdminSocket, setConnectedAdminSocket] = useState<any>();
+    const [connectedAdminSocket, setConnectedAdminSocket] = useState<SocketType>();
 
     useEffect(() => {
-        const socket = io.connect('http://localhost:8000', {
+        const socket:SocketType = io.connect('http://localhost:8000', {
             query: {
                 isAdmin: true
             }
@@ -56,7 +56,7 @@ const Admin = () => {
                 </div>
             </div>
             <div className='flex flex-col h-full'>
-                <MessagesTable userMessage={userMessage!} connectedAdminSocket={connectedAdminSocket}/>
+                <MessagesTable userMessage={userMessage!} connectedAdminSocket={connectedAdminSocket!}/>
             </div>
         </div>
     )

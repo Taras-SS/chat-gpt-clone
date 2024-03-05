@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom'
 import { FormInput, emailPattern } from '../custom-components/FormInput';
-import SnackBar from '../custom-components/SnackBar';
+import SnackBar, { SnackBarconfig } from '../custom-components/SnackBar';
 
 type formFields = {
     email: string,
@@ -15,7 +15,7 @@ type formFields = {
 
 const SignUp = () => {
     const navigate = useNavigate();
-    const [showSnackBar, setShowSnackBar] = useState('');
+    const [showSnackBar, setShowSnackBar] = useState<SnackBarconfig | undefined>(undefined);
 
     const formMethods = useForm<formFields>({
         mode: 'onSubmit',
@@ -29,7 +29,7 @@ const SignUp = () => {
     });
 
     const onSubmitHandler: SubmitHandler<formFields> = async (data) => {
-        setShowSnackBar('')
+        setShowSnackBar(undefined)
 
         const manager = {
             email: data.email,
@@ -48,12 +48,21 @@ const SignUp = () => {
             })
 
             if (resp.status === 403) {
-                setShowSnackBar('Email already exists!');
+                setShowSnackBar({
+                    message: 'This email already exists...'
+                });
                 return;
             }
 
             if (resp.ok) {
-                navigate('/login', { replace: true })
+                setShowSnackBar({
+                    message: 'Manager is successfully created!',
+                    success: true
+                })
+
+                setTimeout(() => {
+                    navigate('/login', { replace: true })
+                }, 2000)
             }
 
         } catch (e) {
@@ -63,9 +72,9 @@ const SignUp = () => {
 
     return (
         <div className="flex h-screen">
-            {showSnackBar && <SnackBar message={showSnackBar} />}
             <div className="hidden lg:flex items-center justify-center flex-1 text-white">
                 <div className="max-w-md text-center">
+                {showSnackBar && <SnackBar config={showSnackBar} />}
                     <svg xmlns="http://www.w3.org/2000/svg" width="524.67004" height="531.39694" className="w-full" viewBox="0 0 524.67004 531.39694" >
                         <polygon points="117.67523 88.74385 113.67523 109.74385 133.61763 115.36589 131.1398 92.94604 117.67523 88.74385" fill="#a0616a" />
                         <path d="M0,5å23.44458c0,.66003,.53003,1.19,1.19006,1.19H523.48004c.65997,0,1.19-.52997,1.19-1.19,0-.65997-.53003-1.19-1.19-1.19H1.19006c-.66003,0-1.19006,.53003-1.19006,1.19Z" fill="#3f3d56" />

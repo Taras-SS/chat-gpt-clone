@@ -57,7 +57,7 @@ const Login = () => {
 
     return (
         <>
-            {showSnackBar && <SnackBar message={showSnackBar} />}
+            {showSnackBar && <SnackBar config={{message: showSnackBar}} />}
             <div className="flex h-screen">
                 <div className="hidden lg:flex items-center justify-center flex-1 text-white">
                     <div className="max-w-md text-center">

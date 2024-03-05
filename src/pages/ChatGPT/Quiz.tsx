@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { SyntheticEvent, useState } from 'react'
 
 
 // question, answer
@@ -61,7 +61,7 @@ const quizItems = [
     }
 ]
 
-const Quiz = ({ handleSubmitQuiz }: { handleSubmitQuiz: any }) => {
+const Quiz = ({ handleSubmitQuiz }: { handleSubmitQuiz: () => void }) => {
     const [answers, setAnswers] = useState<{ [key: string]: string }[]>([]);
 
     const handleAnswerChange = (index: number, answer: string, question: string) => {
@@ -87,7 +87,7 @@ const Quiz = ({ handleSubmitQuiz }: { handleSubmitQuiz: any }) => {
         }
     } 
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
         const filledAnswers = answers.filter(el => el); 
         

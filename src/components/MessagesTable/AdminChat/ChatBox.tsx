@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ChatDoc } from '../ChatSidebar/ChatSidebar';
 import ChatBoxItem from './ChatBoxItem/ChatBoxItem';
-import { UserMessageType } from '../../../pages/Admin';
+import { SocketType, UserMessageType } from '../../../pages/Admin';
 
 const ChatBox = () => {
     const navigate = useNavigate();
     const [messages, setMessages] = useState<ChatDoc[]>([]); 
     const [messageInput, setMessageInput] = useState('');
     const { sessionId } = useParams();
-    const outletContext = useOutletContext() as { userMessage: UserMessageType, connectedAdminSocket: any };
+    const outletContext = useOutletContext() as { userMessage: UserMessageType, connectedAdminSocket: SocketType };
     const ref = useRef<HTMLDivElement>(null);
     const adminSessionId = localStorage.getItem('sessionId')!;
     

@@ -7,7 +7,7 @@ import { UserMessageType } from '../../../pages/Admin';
 type ChatSidebarItemProps = {
     chat: Chat,
     readMessageFromUserChat: (sessionId: string, isViewedByAdmin: boolean) => void;
-    modiefyChats: any
+    modiefyChats: (param: string) => void
 }
 
 const ChatSidebarItem = ({ chat, readMessageFromUserChat, modiefyChats }: ChatSidebarItemProps) => {
