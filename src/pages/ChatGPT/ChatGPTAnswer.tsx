@@ -23,9 +23,7 @@ const ChatGPTAnswer = ({ message, regenarateResponse, isLastOne }: ChatGPTAnswer
         }, 2000)
     }, [])
 
-    useEffect(() => {
-        console.log('rerender');
-        
+    useEffect(() => {        
         scrollRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
     }, [displayResponse.length])
 
