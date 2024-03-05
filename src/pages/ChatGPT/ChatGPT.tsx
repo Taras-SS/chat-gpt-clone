@@ -27,7 +27,9 @@ const ChatGPT = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [messageFromAdmin, setMessageFromAdmin] = useState<ChatDoc>();
     const [connectIsAdmin, setConnetWithAdmin] = useState(false);
-    const [isQuizFinished, setIsQuizFinished] = useState(false);
+    const [isQuizStarted, setIsQuizStarted] = useState(false);
+    const textArea = useRef<HTMLTextAreaElement>(null);
+    const isQuizCompleted = localStorage.getItem('isQuizCompleted')
 
     useEffect(() => {
         const socket = io.connect('http://localhost:8000');
@@ -63,7 +65,6 @@ const ChatGPT = () => {
             setHasAnswered(true)
         }
 
-
         if (parsedChatHistory?.length) {
             setChatsHistory(parsedChatHistory)
             return;
@@ -84,10 +85,6 @@ const ChatGPT = () => {
         }
 
     }, [messageFromAdmin]);
-
-    useEffect(() => {
-        // if (messages.length) setIsQuizFinished(true);
-    }, [messages.length])
 
     const handleEnterClick = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if ((!chatInput.trim().length) && event.key === 'Enter') {
@@ -144,20 +141,33 @@ const ChatGPT = () => {
     }
 
     const sendMessageForChatGPT = async (customMessage?: string) => {
+        if(textArea?.current !== null) {
+            textArea.current.style.height = '68px';        
+        }
+
+        if (customMessage) {
+            setTimeout(() => {
+                if((isQuizCompleted === 'true')) {
+                    setIsQuizStarted(false) 
+                } else {
+                    setIsQuizStarted(true)
+                }
+            }, 2000)
+        }
+
         setIsLoading(true);
         const input = customMessage || chatInput;
         setChatInput('');
         setMessages([
             ...messages,
             { text: input, isBot: false },
-            { text: '', isBot: true }
-        ])
+            ...(!connectIsAdmin ? [{ text: '', isBot: true }] : [])])
         setHasAnswered(true);
 
         try {
             const resp = await fetch('http://localhost:8000/api/ask-question', {
                 method: 'POST',
-                body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId"), connectedWithAdmin: connectIsAdmin  }),
+                body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId"), connectedWithAdmin: connectIsAdmin }),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -167,8 +177,8 @@ const ChatGPT = () => {
             if (resp.ok) {
                 const body = await resp.json();
                 const messagesWithLoader = messages.filter((item => item.text === ''));
-                
-                if(body?.connectedWithAdmin) {
+
+                if (body?.connectedWithAdmin) {
                     return;
                 }
 
@@ -200,6 +210,7 @@ const ChatGPT = () => {
     }
 
     const addChatsToHistory = () => {
+        if (isQuizStarted) return;
         const historyLabel = `${messages[0]?.text} ${messages[messages.length - 1]?.text}`
         setHasAnswered(false);
 
@@ -236,6 +247,17 @@ const ChatGPT = () => {
                 ...clickedChat?.messages
             ])
         }
+    }
+
+    const handleSubmitQuiz = (answers: any) => {
+        localStorage.setItem('isQuizCompleted', 'true')
+
+        setIsQuizStarted(false);
+        setMessages([
+            ...messages,
+            { text: 'Эти вопросы помогут нам лучше понять вашу ситуацию и предоставить наилучшую помощь. Ваша безопасность и возврат утраченных средств - наш главный приоритет.', isBot: true }
+        ])
+
     }
 
     return (
@@ -310,7 +332,9 @@ const ChatGPT = () => {
                                                 isLastOne={(messages.length - 1) === index}
                                             />
                                         ))}
-
+                                        {isQuizStarted &&
+                                            <Quiz handleSubmitQuiz={handleSubmitQuiz} />
+                                        }
                                     </>
                                 }
                             </div>
@@ -340,36 +364,35 @@ const ChatGPT = () => {
                         <form className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
                             <div className="relative flex h-full flex-1 items-stretch md:flex-col">
                                 {!hasAnswered && <ChatGPTQuickQuestions sendMessageForChatGPT={sendMessageForChatGPT} />}
-                                {
-                                    true 
-                                        ?   (<div className="flex w-full items-center">
-                                                <div className="overflow-hidden [&amp;:has(textarea:focus)]:border-token-border-xheavy [&amp;:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)] flex flex-col w-full dark:border-token-border-heavy flex-grow relative border border-token-border-heavy dark:text-white rounded-2xl bg-token-main-surface-primary shadow-[0_0_0_2px_rgba(255,255,255,0.95)] dark:shadow-[0_0_0_2px_rgba(52,53,65,0.95)]">
-                                                    <textarea
-                                                        onKeyDown={handleEnterClick}
-                                                        id='chatTextarea'
-                                                        value={chatInput}
-                                                        onChange={
-                                                            (e) => {
-                                                                setChatInput(e.target.value)
-                                                                resizeTextarea();
-                                                            }
-                                                        }
-                                                        placeholder="Напишите ChatGPT…"
-                                                        className=" bg-transparent pr-10 focus:ring-0 focus-visible:ring-0 dark:bg-transparent mt-0  placeholder-black/50 dark:placeholder-white/50 p-[10px]"
-                                                        style={{ "maxHeight": '450px', 'height': 'auto', 'overflowY': 'visible' }}
-                                                    >
-                                                    </textarea>
-                                                    <button disabled={!chatInput.trim() || isLoading} type='button' onClick={() => sendMessageForChatGPT()} className="absolute bg-black md:bottom-5 md:right-3 dark:hover:bg-white right-2 disabled:opacity-10 disabled:text-gray-400 text-white p-0.5 border border-black rounded-lg dark:border-white dark:bg-white bottom-1.5 transition-colors">
-                                                        <span className="" data-state="closed">
-                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-Default dark:text-Default">
-                                                                <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                                                            </svg>
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>)
-                                        : <Quiz />
-                                }
+                                {isQuizCompleted === 'true' &&
+                                    <div className="flex w-full items-center">
+                                        <div className="overflow-hidden [&amp;:has(textarea:focus)]:border-token-border-xheavy [&amp;:has(textarea:focus)]:shadow-[0_2px_6px_rgba(0,0,0,.05)] flex flex-col w-full dark:border-token-border-heavy flex-grow relative border border-token-border-heavy dark:text-white rounded-2xl bg-token-main-surface-primary shadow-[0_0_0_2px_rgba(255,255,255,0.95)] dark:shadow-[0_0_0_2px_rgba(52,53,65,0.95)]">
+                                            <textarea
+                                                ref={textArea}
+                                                disabled={isQuizStarted}
+                                                onKeyDown={handleEnterClick}
+                                                id='chatTextarea'
+                                                value={chatInput}
+                                                onChange={
+                                                    (e) => {
+                                                        setChatInput(e.target.value)
+                                                        resizeTextarea();
+                                                    }
+                                                }
+                                                placeholder="Напишите ChatGPT…"
+                                                className=" disabled:opacity-30 disabled:cursor-not-allowed bg-transparent pr-10 focus:ring-0 focus-visible:ring-0 dark:bg-transparent mt-0  placeholder-black/50 dark:placeholder-white/50 p-[10px]"
+                                                style={{ "maxHeight": '450px', 'height': 'auto', 'overflowY': 'visible' }}
+                                            >
+                                            </textarea>
+                                            <button disabled={!chatInput.trim() || isLoading} type='button' onClick={() => sendMessageForChatGPT()} className="absolute bg-black md:bottom-5 md:right-3 dark:hover:bg-white right-2 disabled:opacity-10 disabled:text-gray-400 text-white p-0.5 border border-black rounded-lg dark:border-white dark:bg-white bottom-1.5 transition-colors">
+                                                <span className="" data-state="closed">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-Default dark:text-Default">
+                                                        <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                                    </svg>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>}
                             </div>
                         </form>
                         <div className="relative px-2 py-2 text-center text-xs text-token-text-secondary md:px-[60px]"><span className='text-white'>ChatGPT может допускать ошибки. Подумайте о проверке важной информации..</span></div>

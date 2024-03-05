@@ -66,6 +66,7 @@ const ChatBox = () => {
                         message: JSON.stringify([{"index":0,"message":{"role":"assistant","content": messageInput },"logprobs":null,"finish_reason":"stop"}]),
                         viewedByAdmin: true,
                         viewedByUser: false,
+                        sentByAdmin: true,
                         __v: 0,
                         _id: adminSessionId!,
                     }
@@ -92,7 +93,7 @@ const ChatBox = () => {
         }
     }
 
-    const exitLiveChat = () => {
+    const exitLiveChat = () => {        
         outletContext.connectedAdminSocket.emit('connect-with-gpt', {
             sessionId: sessionId
         })
@@ -116,8 +117,8 @@ const ChatBox = () => {
                     className=" w-10/12 bg-gray-300 px-3 mr-2 rounded-xl text-black"
                     placeholder="Type your message here..."
                 />
-                <button onClick={sendMessageToUser} type="button" className="w-2/12 text-md text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-4 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Send</button>
-                <button onClick={exitLiveChat} type="button" className="w-1/12 ml-2 text-md text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg px-4 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800">Exit</button>
+                <button onClick={sendMessageToUser} type="button" className="w-2/12 text-md text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-4 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Отправить</button>
+                <button onClick={exitLiveChat} type="button" className="w-2/12 ml-2 text-sm text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800">Покинуть чат</button>
             </div>
         </div>
     )

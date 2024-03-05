@@ -5,6 +5,7 @@ import { useOutletContext } from 'react-router-dom'
 import { UserMessageType } from '../../../pages/Admin'
 
 export type ChatDoc = {
+    sentByAdmin: boolean
     clientSessionId: string
     createdAt: string
     message: string

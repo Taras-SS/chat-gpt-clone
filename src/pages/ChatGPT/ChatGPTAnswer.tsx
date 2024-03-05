@@ -24,6 +24,8 @@ const ChatGPTAnswer = ({ message, regenarateResponse, isLastOne }: ChatGPTAnswer
     }, [])
 
     useEffect(() => {
+        console.log('rerender');
+        
         scrollRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
     }, [displayResponse.length])
 
@@ -50,7 +52,7 @@ const ChatGPTAnswer = ({ message, regenarateResponse, isLastOne }: ChatGPTAnswer
     }, [message]);
 
     return (
-        <div className='flex flex-row bg-Default text-white overflow-auto'>
+        <div className='flex flex-row bg-Default text-white overflow-auto' >
             <div className="w-full text-token-text-primary" data-testid="conversation-turn-9">
                 <div className="px-4 py-2 justify-center text-base md:gap-6 m-auto">
                     <div className="flex flex-1 pt-5 text-base mx-auto gap-3 md:px-5 lg:px-1 xl:px-5 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem] group final-completion">
@@ -74,11 +76,11 @@ const ChatGPTAnswer = ({ message, regenarateResponse, isLastOne }: ChatGPTAnswer
                                 </div>
                             </div>
                         </div>
-                        <div className="relative flex w-full flex-col lg:w-[calc(100%-115px)] agent-turn">
+                        <div className="relative flex w-full flex-col lg:w-[calc(100%-115px)] agent-turn" ref={scrollRef}>
                             <div className="font-semibold select-none">{message.isBot ? 'ChatGPT' : 'You'}</div>
                             <div className="flex-col gap-1 md:gap-3">
-                                <div className="flex flex-grow flex-col max-w-full">
-                                    <div data-message-author-role="assistant" data-message-id="abbfcc13-6351-4d27-a831-6d277593c611" className="min-h-[20px] text-message flex flex-col items-start gap-3 whitespace-pre-wrap break-words [.text-message+&amp;]:mt-5 overflow-x-auto">
+                                <div className="flex flex-grow flex-col max-w-full" >
+                                    <div data-message-author-role="assistant"  data-message-id="abbfcc13-6351-4d27-a831-6d277593c611" className="min-h-[20px] text-message flex flex-col items-start gap-3 whitespace-pre-wrap break-words [.text-message+&amp;]:mt-5 overflow-x-auto">
                                         {
                                             message.isBot
                                                 ? (!displayResponse
@@ -105,7 +107,7 @@ const ChatGPTAnswer = ({ message, regenarateResponse, isLastOne }: ChatGPTAnswer
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-1 flex justify-start gap-3 empty:hidden" ref={scrollRef}>
+                            <div className="mt-1 flex justify-start gap-3 empty:hidden" >
                                 {
                                     message.isBot &&
                                     isLastOne &&

@@ -14,7 +14,7 @@ const MessagesTable = ({ userMessage, connectedAdminSocket }: MessageTableProps)
     return (
         <div className="shadow-lg rounded-lg bg-inherit flex flex-col flex-1">
             <div className="px-10 py-5 flex justify-between items-center bg-inherit border-b-2">
-                <div className="font-semibold text-2xl">Manager chat</div>
+                <div className="font-semibold text-2xl">Чаты с клиентами</div>
                 <div className="w-1/2 flex justify-end ">
                 <div>
                     <span className='mr-4'>{loggedInUser?.firstName}</span>

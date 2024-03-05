@@ -5,8 +5,10 @@ type ChatBoxItemProps = {
     message: ChatDoc
 }
 const ChatBoxItem = ({ message }: ChatBoxItemProps) => {
-    const isBot = message.message[0] === '[';
-    const AImessage = isBot && JSON.parse(message.message);
+    const isBot = message.sentByAdmin;
+
+    const AImessage = message?.message?.includes('[') ? JSON.parse(message.message) : message.message;
+    const Message = typeof AImessage === 'string' ? AImessage : AImessage[0]?.message?.content
 
     return (
         <div >
@@ -16,7 +18,7 @@ const ChatBoxItem = ({ message }: ChatBoxItemProps) => {
                             <div
                                 className="mr-2 py-3 px-4 bg-blue-400 rounded-bl-3xl rounded-tl-3xl rounded-tr-xl text-white"
                                 >
-                                {AImessage[0]?.message?.content}
+                                {Message}
                             </div>
                             <div className='h-6 w-6'>
                                 <svg color='white' className="w-6 h-6" fill='white' xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 122.88 111.81" xmlSpace="preserve">
@@ -32,8 +34,6 @@ const ChatBoxItem = ({ message }: ChatBoxItemProps) => {
                             </div>
                         </div>)
             }
-
-
         </div>
 
     )
