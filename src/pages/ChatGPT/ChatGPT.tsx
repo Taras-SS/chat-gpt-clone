@@ -177,7 +177,7 @@ const ChatGPT = () => {
             if (resp.ok) {
                 const body = await resp.json();
                 const messagesWithLoader = messages.filter((item => item.text === ''));
-
+                        
                 if (body?.connectedWithAdmin) {
                     return;
                 }
