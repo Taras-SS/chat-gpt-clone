@@ -100,7 +100,7 @@ const ChatGPT = () => {
     }
 
     const regenarateResponse = async () => {
-        const lastUserMessage = messages.toReversed().find(el => !el.isBot)?.text;
+        const lastUserMessage = messages.reverse().find(el => !el.isBot)?.text;
         const copiedMessages = messages.slice(0, -1);
 
         setIsLoading(true);
@@ -262,7 +262,7 @@ const ChatGPT = () => {
 
     return (
         <div className='h-screen bg-Default text-black flex'>
-            <div className='w-64 flex flex-col'>
+            <div className='overflowSidePart w-64 flex flex-col sideBar'>
                 <div className='relative flex flex-col flex-grow bg-[#171717]'>
                     <div className="sticky left-0 right-0 top-0 z-20 bg-[#171717] pt-3.5">
                         <div className="pb-0.5 last:pb-0 text-white " >
@@ -307,7 +307,7 @@ const ChatGPT = () => {
                 </div>
             </div>
 
-            <div className='relative flex flex-1 flex-col h-full'>
+            <div className='overflowTry relative flex flex-1 flex-col h-full'>
                 <div className="sticky top-0 mb-1.5 flex items-center justify-between z-10 h-14 p-2 font-semibold bg-token-main-surface-primary">
                     <div className="absolute left-1/2 -translate-x-1/2"></div>
                     <div className="flex items-center gap-2">
@@ -339,7 +339,7 @@ const ChatGPT = () => {
                                 }
                             </div>
                             {!hasAnswered &&
-                                <div className="flex flex-col items-center justify-center mt-14 pt-14">
+                                <div className="question flex flex-col items-center justify-center mt-14 pt-14">
                                     <div className="relative">
                                         <div className="h-12 w-12">
                                             <div className="gizmo-shadow-stroke relative flex h-full items-center justify-center rounded-full bg-white text-black">

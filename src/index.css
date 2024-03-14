@@ -8,3 +8,44 @@
     top: 0;
     width: 100%;
 }
+
+div.overflow-scroll{
+    overflow: visible;
+}
+
+
+@media screen and (max-width: 800px){
+    .sideBar{
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        border: 0;
+        padding: 0;
+
+        white-space: nowrap;
+        clip-path: inset(100%);
+        clip: rect(0 0 0 0);
+        overflow: hidden;
+    }
+
+    .question{
+        font-size: 11px;
+        position: relative;
+        top: -148px;
+    }
+
+
+}
+
+.fontQs{
+    font-size: 13px;
+}
+
+.overflowTry{
+    overflow-y: scroll;
+}
+
+.overflowSidePart{
+    overflow-y: hidden;
+}
