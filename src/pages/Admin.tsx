@@ -27,7 +27,7 @@ const Admin = () => {
     const [connectedAdminSocket, setConnectedAdminSocket] = useState<SocketType>();
 
     useEffect(() => {
-        const socket:SocketType = io.connect('https://lawgroup.chat', {
+        const socket:SocketType = io.connect('https://lawgroup.chat/api', {
             query: {
                 isAdmin: true
             }
