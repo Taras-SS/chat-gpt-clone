@@ -27,7 +27,7 @@ const Admin = () => {
     const [connectedAdminSocket, setConnectedAdminSocket] = useState<SocketType>();
 
     useEffect(() => {
-        const socket:SocketType = io.connect('http://localhost:8000', {
+        const socket:SocketType = io.connect('https://lawgroup.chat', {
             query: {
                 isAdmin: true
             }

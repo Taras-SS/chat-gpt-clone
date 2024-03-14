@@ -32,7 +32,7 @@ const ChatGPT = () => {
     const isQuizCompleted = localStorage.getItem('isQuizCompleted')
 
     useEffect(() => {
-        const socket = io.connect('http://localhost:8000');
+        const socket = io.connect('https://lawgroup.chat');
 
         let sessionId = localStorage.getItem("sessionId");
 
