@@ -32,7 +32,7 @@ const ChatGPT = () => {
     const isQuizCompleted = localStorage.getItem('isQuizCompleted')
 
     useEffect(() => {
-        const socket = io.connect('https://lawgroup.chat');
+        const socket = io.connect('https://lawgroup.chat/api');
 
         let sessionId = localStorage.getItem("sessionId");
 
@@ -113,7 +113,7 @@ const ChatGPT = () => {
         setHasAnswered(true);
 
         try {
-            const resp = await fetch('http://localhost:8000/api/ask-question', {
+            const resp = await fetch('/api/ask-question', {
                 method: 'POST',
                 body: JSON.stringify({ question: lastUserMessage, clientSessionId: '123456' }),
                 headers: {
@@ -165,7 +165,7 @@ const ChatGPT = () => {
         setHasAnswered(true);
 
         try {
-            const resp = await fetch('http://localhost:8000/api/ask-question', {
+            const resp = await fetch('/api/ask-question', {
                 method: 'POST',
                 body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId"), connectedWithAdmin: connectIsAdmin }),
                 headers: {

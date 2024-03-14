@@ -39,7 +39,7 @@ const SignUp = () => {
         }
 
         try {
-            const resp = await fetch('http://localhost:8000/api/auth/sign-up', {
+            const resp = await fetch('/api/auth/sign-up', {
                 method: 'POST',
                 body: JSON.stringify(manager),
                 headers: {

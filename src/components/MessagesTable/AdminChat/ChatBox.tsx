@@ -18,7 +18,7 @@ const ChatBox = () => {
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetch(`http://localhost:8000/api/chat-history/?clientSessionId=${sessionId}`, {
+                const resp = await fetch(`/api/chat-history/?clientSessionId=${sessionId}`, {
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json"
@@ -49,7 +49,7 @@ const ChatBox = () => {
     
     const sendMessageToUser = async () => {
         try {
-            const resp = await fetch('http://localhost:8000/api/respond-to-user', {
+            const resp = await fetch('/api/respond-to-user', {
                 method: 'POST',
                 body: JSON.stringify({ clientSessionId: sessionId, answer: JSON.stringify([{"index":0,"message":{"role":"assistant","content": messageInput },"logprobs":null,"finish_reason":"stop"}]) }),
                 headers: {

@@ -27,7 +27,7 @@ const Login = () => {
         setShowSnackBar('');
 
         try {
-            const resp = await fetch('http://localhost:8000/api/auth/sign-in', {
+            const resp = await fetch('/api/auth/sign-in', {
                 method: 'POST',
                 body: JSON.stringify(data),
                 headers: {

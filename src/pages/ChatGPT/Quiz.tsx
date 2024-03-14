@@ -75,7 +75,7 @@ const Quiz = ({ handleSubmitQuiz }: { handleSubmitQuiz: () => void }) => {
 
     const sendQuizAnswers = async (question: string, answer: string) => {
         try {
-            const resp = await fetch('http://localhost:8000/api/ask-question', {
+            const resp = await fetch('/api/ask-question', {
                 method: 'POST',
                 body: JSON.stringify({ question: question, answer: answer, clientSessionId: localStorage.getItem("sessionId") }),
                 headers: {

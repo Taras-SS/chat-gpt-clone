@@ -33,7 +33,7 @@ const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetch('http://localhost:8000/api/chats', {
+                const resp = await fetch('/api/chats', {
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json"
@@ -58,7 +58,7 @@ const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
         if(isViewedByAdmin) return;
         
         try {
-            await fetch('http://localhost:8000/api/read-messages', {
+            await fetch('/api/read-messages', {
                 method: 'POST',
                 body: JSON.stringify({ clientSessionId: sessionId }),
                 headers: {
