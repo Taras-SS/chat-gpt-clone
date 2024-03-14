@@ -384,7 +384,7 @@ const ChatGPT = () => {
                                                 style={{ "maxHeight": '450px', 'height': 'auto', 'overflowY': 'visible' }}
                                             >
                                             </textarea>
-                                            <button disabled={!chatInput.trim() || isLoading} type='button' onClick={() => sendMessageForChatGPT()} className="absolute bg-black md:bottom-5 md:right-3 dark:hover:bg-white right-2 disabled:opacity-10 disabled:text-gray-400 text-white p-0.5 border border-black rounded-lg dark:border-white dark:bg-white bottom-1.5 transition-colors">
+                                            <button disabled={!chatInput.trim() || isLoading} type='button' onClick={() => sendMessageForChatGPT()} className="absolute bg-black md:bottom-5 md:right-3 dark:hover:bg-white right-2 disabled:opacity-10 disabled:text-gray-400 text-white p-0.5 border border-black rounded-lg dark:border-white dark:bg-white bottom-1.5 transition-colors chat">
                                                 <span className="" data-state="closed">
                                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-Default dark:text-Default">
                                                         <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>

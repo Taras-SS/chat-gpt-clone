@@ -32,7 +32,10 @@ div.overflow-scroll{
     .question{
         font-size: 11px;
         position: relative;
-        top: -148px;
+        top: -105px;
+    }
+    .chat {
+        bottom: 20px !important;
     }
 
 
