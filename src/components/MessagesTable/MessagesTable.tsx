@@ -22,7 +22,7 @@ const MessagesTable = ({ userMessage, connectedAdminSocket }: MessageTableProps)
                 </div>
                 </div>
             </div>
-            <div className="flex flex-row justify-between bg-inherit flex-1">
+            <div className="flex flex-row justify-between bg-inherit block-height">
                 <ChatSidebar userMessage={userMessage} />
                 <Outlet context={{userMessage, connectedAdminSocket}} />
             </div>

@@ -38,7 +38,6 @@ div.overflow-scroll{
         bottom: 20px !important;
     }
 
-
 }
 
 .fontQs{
@@ -51,4 +50,8 @@ div.overflow-scroll{
 
 .overflowSidePart{
     overflow-y: hidden;
+}
+
+.block-height {
+    height: calc(100vh - 146px);
 }

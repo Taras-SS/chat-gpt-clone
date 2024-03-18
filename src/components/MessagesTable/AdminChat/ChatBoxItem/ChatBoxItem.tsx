@@ -26,7 +26,9 @@ const ChatBoxItem = ({ message }: ChatBoxItemProps) => {
                             </div>
                         </div>)
                     :   (<div className="flex justify-start mb-4 items-center">
-                            <svg className='w-6 h-6 rounded-full' color='white' fill='white' viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs></defs><title /><g data-name="Layer 7" id="Layer_7"><path className="cls-1" d="M19.75,15.67a6,6,0,1,0-7.51,0A11,11,0,0,0,5,26v1H27V26A11,11,0,0,0,19.75,15.67ZM12,11a4,4,0,1,1,4,4A4,4,0,0,1,12,11ZM7.06,25a9,9,0,0,1,17.89,0Z" /></g></svg>
+                            <div className='h-6 w-6'>
+                                <svg className='w-6 h-6 rounded-full' color='white' fill='white' viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs></defs><title /><g data-name="Layer 7" id="Layer_7"><path className="cls-1" d="M19.75,15.67a6,6,0,1,0-7.51,0A11,11,0,0,0,5,26v1H27V26A11,11,0,0,0,19.75,15.67ZM12,11a4,4,0,1,1,4,4A4,4,0,0,1,12,11ZM7.06,25a9,9,0,0,1,17.89,0Z" /></g></svg>
+                            </div>
                             <div
                                 className="ml-2 py-3 px-4 bg-gray-400 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white"
                             >
