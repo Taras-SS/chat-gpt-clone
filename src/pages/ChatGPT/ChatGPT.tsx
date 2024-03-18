@@ -115,7 +115,7 @@ const ChatGPT = () => {
         setHasAnswered(true);
 
         try {
-            const resp = await fetch('http://localhost:8000/api/ask-question', {
+            const resp = await fetch('/api/ask-question', {
                 method: 'POST',
                 body: JSON.stringify({ question: lastUserMessage, clientSessionId: '123456' }),
                 headers: {
@@ -167,7 +167,7 @@ const ChatGPT = () => {
         setHasAnswered(true);
 
         try {
-            const resp = await fetch('http://localhost:8000/api/ask-question', {
+            const resp = await fetch('/api/ask-question', {
                 method: 'POST',
                 body: JSON.stringify({ 
                     question: input, 
@@ -325,9 +325,9 @@ const ChatGPT = () => {
                         </div>
                     </div>
                 </div>
-                <div role="presentation" className="flex h-full flex-col overflow-scroll">
-                    <div className="flex-1 overflow-scroll">
-                        <div className="relative overflow-scroll">
+                <div role="presentation" className="flex h-full flex-col overflow-auto">
+                    <div className="flex-1 overflow-auto">
+                        <div className="relative">
                             <div className="absolute left-0 right-0">
                             </div>
                             <div className='mt-5'>

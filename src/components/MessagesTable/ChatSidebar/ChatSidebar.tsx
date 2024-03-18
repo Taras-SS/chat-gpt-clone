@@ -36,7 +36,7 @@ const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetch('http://localhost:8000/api/chats', {
+                const resp = await fetch('/api/chats', {
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json"

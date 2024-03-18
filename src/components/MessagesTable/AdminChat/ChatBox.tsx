@@ -18,7 +18,7 @@ const ChatBox = () => {
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetch(`http://localhost:8000/api/chat-history/?clientSessionId=${sessionId}`, {
+                const resp = await fetch(`/api/chat-history/?clientSessionId=${sessionId}`, {
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json"
