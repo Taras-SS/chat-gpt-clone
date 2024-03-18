@@ -13,6 +13,9 @@ export type ChatDoc = {
     viewedByUser: boolean
     __v: number
     _id: string
+    userName?: string,
+    clientEmail?: string
+    clientPhoneNumber?: string
 }
 
 export type Chat = {
@@ -33,7 +36,7 @@ const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetch('/api/chats', {
+                const resp = await fetch('http://localhost:8000/api/chats', {
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json"
@@ -119,7 +122,7 @@ const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
     }
     
     return (
-        <div className="flex flex-col w-2/5 max-h-[100%] h-[43rem] overflow-scroll border-r-2">
+        <div className="flex flex-col w-2/5 border-r-2 overflow-auto">
             <div className="border-b-2 py-4 px-2">
                 <input
                     type="text"

@@ -1,4 +1,5 @@
 import React, { SyntheticEvent, useState } from 'react'
+import { useSearchParams } from 'react-router-dom';
 
 
 // question, answer
@@ -62,6 +63,8 @@ const quizItems = [
 ]
 
 const Quiz = ({ handleSubmitQuiz }: { handleSubmitQuiz: () => void }) => {
+    const [searchParams] = useSearchParams();
+
     const [answers, setAnswers] = useState<{ [key: string]: string }[]>([]);
 
     const handleAnswerChange = (index: number, answer: string, question: string) => {
@@ -75,9 +78,16 @@ const Quiz = ({ handleSubmitQuiz }: { handleSubmitQuiz: () => void }) => {
 
     const sendQuizAnswers = async (question: string, answer: string) => {
         try {
-            const resp = await fetch('/api/ask-question', {
+            await fetch('/api/ask-question', {
                 method: 'POST',
-                body: JSON.stringify({ question: question, answer: answer, clientSessionId: localStorage.getItem("sessionId") }),
+                body: JSON.stringify({ 
+                    question: question, 
+                    answer: answer, 
+                    clientSessionId: localStorage.getItem("sessionId"),
+                    userName: searchParams.get('userName') , 
+                    clientEmail: searchParams.get('clientEmail'), 
+                    clientPhoneNumber: searchParams.get('clientPhoneNumber') 
+                }),
                 headers: {
                     "Content-Type": "application/json"
                 }

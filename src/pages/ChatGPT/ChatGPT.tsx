@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import ChatGPTQuickQuestions from './ChatGPTQuickQuestions';
 import * as io from 'socket.io-client'
 import Quiz from './Quiz';
+import { useSearchParams } from 'react-router-dom';
 
 
 export type Message = {
@@ -30,6 +31,7 @@ const ChatGPT = () => {
     const [isQuizStarted, setIsQuizStarted] = useState(false);
     const textArea = useRef<HTMLTextAreaElement>(null);
     const isQuizCompleted = localStorage.getItem('isQuizCompleted')
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
         const socket = io.connect('https://lawgroup.chat/api');
@@ -113,7 +115,7 @@ const ChatGPT = () => {
         setHasAnswered(true);
 
         try {
-            const resp = await fetch('/api/ask-question', {
+            const resp = await fetch('http://localhost:8000/api/ask-question', {
                 method: 'POST',
                 body: JSON.stringify({ question: lastUserMessage, clientSessionId: '123456' }),
                 headers: {
@@ -165,9 +167,16 @@ const ChatGPT = () => {
         setHasAnswered(true);
 
         try {
-            const resp = await fetch('/api/ask-question', {
+            const resp = await fetch('http://localhost:8000/api/ask-question', {
                 method: 'POST',
-                body: JSON.stringify({ question: input, clientSessionId: localStorage.getItem("sessionId"), connectedWithAdmin: connectIsAdmin }),
+                body: JSON.stringify({ 
+                    question: input, 
+                    clientSessionId: localStorage.getItem("sessionId"), 
+                    connectedWithAdmin: connectIsAdmin, 
+                    userName: searchParams.get('userName') , 
+                    clientEmail: searchParams.get('clientEmail'), 
+                    clientPhoneNumber: searchParams.get('clientPhoneNumber')
+                }),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -330,6 +339,7 @@ const ChatGPT = () => {
                                                 key={index}
                                                 regenarateResponse={regenarateResponse}
                                                 isLastOne={(messages.length - 1) === index}
+                                                isQuizStarted={isQuizStarted}
                                             />
                                         ))}
                                         {isQuizStarted &&

@@ -18,7 +18,7 @@ const ChatBox = () => {
     useEffect(() => {
         (async () => {
             try {
-                const resp = await fetch(`/api/chat-history/?clientSessionId=${sessionId}`, {
+                const resp = await fetch(`http://localhost:8000/api/chat-history/?clientSessionId=${sessionId}`, {
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json"
@@ -103,7 +103,7 @@ const ChatBox = () => {
     
     return (
         <div className="w-full flex flex-col justify-between" >
-            <div id='scroll' className="flex flex-col px-5 mt-5 basis-[37rem] overflow-scroll">
+            <div id='scroll' className="flex flex-col px-5 mt-5 overflow-auto">
                 {
                     messages.map((message, index) => <ChatBoxItem key={index} message={message} />)
                 }

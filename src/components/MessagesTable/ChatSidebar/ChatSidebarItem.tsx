@@ -13,6 +13,9 @@ type ChatSidebarItemProps = {
 const ChatSidebarItem = ({ chat, readMessageFromUserChat, modiefyChats }: ChatSidebarItemProps) => {
     const date = new Date(chat.doc.createdAt).toLocaleString() 
     const isMessageRead = chat.doc.viewedByAdmin;
+    const userName = chat.doc.userName;
+    const userEmail = chat.doc.clientEmail;
+    const phone = chat.doc.clientPhoneNumber;    
 
     const onOpenChat = () => {
         modiefyChats(chat._id)
@@ -25,8 +28,11 @@ const ChatSidebarItem = ({ chat, readMessageFromUserChat, modiefyChats }: ChatSi
             onClick={() => {readMessageFromUserChat(chat.doc?.clientSessionId, isMessageRead); onOpenChat()}}
         >
             <div className="w-full">
-                <div className="text-lg font-semibold">{chat.doc?.clientSessionId}</div>
-                <span className="text-gray-400">{date}</span>
+                <div className="text-md font-semibold">Имя: {userName || '-'}</div>
+                <div className="text-md font-semibold">Email: {userEmail || '-'}</div>
+                <div className="text-gray-400">Телефон: {phone || '-'}</div>
+                <span className="text-gray-400">Дата: {date}</span>
+                
             </div>
             <div>
                 {isMessageRead ? <EnvelopeOpenIcon className='w-6 h-6' />  : <EnvelopeIcon className='w-6 h-6' /> }
