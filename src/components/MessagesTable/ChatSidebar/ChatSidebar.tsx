@@ -92,8 +92,11 @@ const ChatSideBar = ({  userMessage }: ChatSideBarProps) => {
     const onFilterChats = (filteringValue: string) => {
         const filtered = chats.filter((option: Chat) => {
             const filteerByDateAndTime = new Date(option.doc.createdAt).toLocaleString().toLowerCase().includes(filteringValue.toLowerCase())
-            const filterBySessionId = option.doc.clientSessionId.toLowerCase().includes(filteringValue.toLowerCase())
-            return  filteerByDateAndTime || filterBySessionId;     
+            const filterByUserName = option.doc.userName?.toLowerCase().includes(filteringValue.toLowerCase())
+            const filterByEmail = option.doc.clientEmail?.toLowerCase().includes(filteringValue.toLowerCase())
+            const filterByPhone = option.doc.clientPhoneNumber?.toLowerCase().includes(filteringValue.toLowerCase())
+
+            return  filteerByDateAndTime || filterByUserName || filterByEmail || filterByPhone;     
         })
 
         setFilteredChats(filtered);    
